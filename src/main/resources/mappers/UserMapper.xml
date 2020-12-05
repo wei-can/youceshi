@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kgc.smbms.dao.UserMapper">
+
+    <select id="queryUserByUserCode" resultType="java.lang.Integer">
+        select count(id)
+        from smbms_user
+        where userCode = #{userCode}
+    </select>
+    <select id="queryUserByUserCodeAndUserPassword" resultType="cn.kgc.smbms.entity.User">
+        select id,
+               userCode,
+               userName,
+               userPassword,
+               gender,
+               birthday,
+               phone,
+               address,
+               userRole
+        from smbms_user
+        where userCode = #{userCode}
+          and userPassword = #{userPassword}
+    </select>
+    <select id="queryAllUser" resultType="cn.kgc.smbms.entity.User">
+        select smbms_user.id,
+        userCode,
+        userName,
+        userPassword,
+        gender,
+        birthday,
+        phone,
+        address,
+        userRole,
+        YEAR(NOW()) - YEAR(birthday) as age,
+        smbms_role.roleName as userRoleName
+        from smbms_user,
+        smbms_role
+        where smbms_role.id = smbms_user.userRole
+        <if test="userName != null and userName != ''">
+            and userName like concat('%',#{userName},'%')
+        </if>
+        <if test="roleId != null and roleId = 0">
+            and userRole = #{roleId}
+        </if>
+    </select>
+    <select id="getUserById" resultType="cn.kgc.smbms.entity.User">
+        select id,
+               userCode,
+               userName,
+               userPassword,
+               gender,
+               birthday
+        from smbms_user
+        where id = #{id}
+    </select>
+    <insert id="addUser">
+        insert into smbms_user (userCode, userName, userPassword, gender, birthday, phone, address, userRole)
+        values (#{userCode}, #{userName}, #{userPassword}, #{gender}, #{birthday}, #{phone}, #{address}, #{userRole})
+    </insert>
+</mapper>
